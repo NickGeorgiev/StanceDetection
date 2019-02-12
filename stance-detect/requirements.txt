@@ -1,0 +1,7 @@
+spacy==2.0.18
+pandas==0.24.0
+numpy==1.16.1
+nltk==3.4
+gensim==3.7.1
+textblob==0.15.2
+scikit_learn==0.20.2

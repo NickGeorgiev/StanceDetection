@@ -1,0 +1,1 @@
+py load_data.py && echo "Loaded data" && py common_ngrams_finder.py && echo "Loaded ngrams" && py hashtags_finder.py && py featurise_data.py && py train_and_test.py
