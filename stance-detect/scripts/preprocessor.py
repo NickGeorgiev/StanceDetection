@@ -13,6 +13,7 @@ def initial_text_clean_up(text):
     text = remove_user_mentions(text)
     text = replace_contractions(text)
     text = remove_unnecessary_whitespace(text)
+    text = remove_numeric_data(text)
     return text
 
 
@@ -85,6 +86,16 @@ def get_interjection_words_descriptions(text):
                 interjection_words_descriptions.append(word_description)
     return interjection_words_descriptions
 
+
+def remove_numeric_data(tweet):
+    tweet = tweet.lower()
+    words = tweet.split()
+    for word in words:
+        if word.encode('unicode-escape').startswith(b'\u') or word.isnumeric():
+            words.remove(word)
+    words = [word.strip(r'\"\'') for word in words]
+    tweet = ' '.join(words).strip()
+    return tweet
 
 def get_tweet_text_only(tweet):
     tweet = remove_hashtags(tweet)

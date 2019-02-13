@@ -43,36 +43,36 @@ testsetsNLSVM = defaultdict(set)
 
 linear_svm_classifier = nltk.SklearnClassifier(LinearSVC(C=2.0, dual=True, fit_intercept=True,
                                                          intercept_scaling=0.1, loss='squared_hinge',
-                                                         max_iter=1500, penalty='l2', random_state=0,
+                                                         max_iter=2500, penalty='l2', random_state=0,
                                                          tol=0.0001), sparse=False)
 linear_svm_classifier.train(train_set)
 print("Accuracy - Linear SVM Classifier: ")
 print(nltk.classify.accuracy(linear_svm_classifier, test_set))
 
 
-nonlinear_svm = SklearnClassifier(SVC(gamma='scale', kernel='poly', coef0 = 5.0, degree = 5, C = 5.0, shrinking=True, probability=False, tol=1e-3), sparse=False).train(train_set)
-print("Accuracy - Nonlinear SVM: ")
-print(nltk.classify.accuracy(nonlinear_svm, test_set))
+# nonlinear_svm = SklearnClassifier(SVC(gamma='scale', kernel='poly', coef0 = 5.0, degree = 5, C = 5.0, shrinking=True, probability=False, tol=1e-3), sparse=False).train(train_set)
+# print("Accuracy - Nonlinear SVM: ")
+# print(nltk.classify.accuracy(nonlinear_svm, test_set))
 
 
 
-print(enumerate())
 for i, (features, label) in enumerate(test_set):
 	refsets[label].add(i)
 	# nb_result = naive_bayes.classify(features)
 	lsvm_result = linear_svm_classifier.classify(features)
-	nlsvm_result = nonlinear_svm.classify(features)
+	# print(lsvm_result)
+	# nlsvm_result = nonlinear_svm.classify(features)
 	# testsetsNB[nb_result].add(i)
 	testsetsLSVM[lsvm_result].add(i)
-	testsetsNLSVM[nlsvm_result].add(i)
+	# testsetsNLSVM[nlsvm_result].add(i)
 
 print("LINEAR SVM:")
 print('against precision:', precision(refsets['AGAINST'], testsetsLSVM['AGAINST']))
 print('against recall:', recall(refsets['AGAINST'], testsetsLSVM['AGAINST']))
 print('against F-measure:', f_measure(refsets['AGAINST'], testsetsLSVM['AGAINST']))
-print('favour precision:', precision(refsets['FAVOUR'], testsetsLSVM['FAVOUR']))
-print('favour recall:', recall(refsets['FAVOUR'], testsetsLSVM['FAVOUR']))
-print('favour F-measure:', f_measure(refsets['FAVOUR'], testsetsLSVM['FAVOUR']))
+print('favor precision:', precision(refsets['FAVOR'], testsetsLSVM['FAVOR']))
+print('favor recall:', recall(refsets['FAVOR'], testsetsLSVM['FAVOR']))
+print('favor F-measure:', f_measure(refsets['FAVOR'], testsetsLSVM['FAVOR']))
 print("\n\n")
 
 # print("NONLINEAR SVM")

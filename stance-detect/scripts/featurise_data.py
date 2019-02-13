@@ -10,3 +10,5 @@ def create_features_for_data():
     featuresets = [(extract_features_of_tweet(tweet), cls) for (tweet, target, cls) in labeled_data]
     with open('../jsons/features_sets.json', 'w') as file:
         file.write(json.dumps(featuresets))
+
+create_features_for_data()
