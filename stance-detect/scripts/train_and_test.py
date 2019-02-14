@@ -41,10 +41,10 @@ testsetsNLSVM = defaultdict(set)
 # print("Most informative features - Max Entropy Classifier:")
 # print(maxent.show_most_informative_features())
 
-linear_svm_classifier = nltk.SklearnClassifier(LinearSVC(C=2.0, dual=True, fit_intercept=True,
+linear_svm_classifier = nltk.SklearnClassifier(LinearSVC(C=3.0, dual=True, fit_intercept=True,
                                                          intercept_scaling=0.1, loss='squared_hinge',
                                                          max_iter=2500, penalty='l2', random_state=0,
-                                                         tol=0.0001), sparse=False)
+                                                         tol=0.0001), sparse=True)
 linear_svm_classifier.train(train_set)
 print("Accuracy - Linear SVM Classifier: ")
 print(nltk.classify.accuracy(linear_svm_classifier, test_set))

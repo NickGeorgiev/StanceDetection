@@ -1,1 +1,1 @@
-py load_data.py && echo "Loaded data" && py common_ngrams_finder.py && echo "Loaded ngrams" && py hashtags_finder.py && py featurise_data.py && py train_and_test.py
+py load_data.py && echo "Loaded data" && py common_ngrams_finder.py && echo "Loaded ngrams" && py tfidf_extractor.py && echo "TFIDF features" && py hashtags_finder.py && echo "Hashtags parsed" && py assign_features.py && echo "Features assigned" && py train_and_test.py

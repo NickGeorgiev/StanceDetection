@@ -9,7 +9,7 @@ def parse_csv_file(csv_file_path):
     return [
         (initial_text_clean_up(tweet),target, stance)
         for (tweet, target, stance)
-        in list(zip(data['Tweet'], data['Target'], data['Stance'])) if stance != 'NONE' or target != 'Donald Trump'
+        in list(zip(data['Tweet'], data['Target'], data['Stance'])) if stance != 'NONE' and target != 'Donald Trump'
     ]
 
 
