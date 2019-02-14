@@ -10,6 +10,7 @@ from utilities import *
 # from topic_model import extract_topic_features
 
 from word_embeddings import extract_glove_features
+from nmf_clustering import extract_topic_features
 
 COMMON_UNIGRAMS = set()
 COMMON_BIGRAMS = set()
@@ -45,7 +46,6 @@ def extract_sentiment_features_of_tweet(features, tweet):
     tweet_blob = TextBlob(' '.join(tokens))
     features['tweet_polarity'] = tweet_blob.sentiment.polarity
     features['tweet_subjectivity'] = tweet_blob.sentiment.subjectivity
-
 
 
 def extract_capitalization_features(features, text):
@@ -147,20 +147,20 @@ def extract_pos_ngrams_features(features, text):
         features['pos_trigram: ' + pos_trigram] = 1 if pos_trigram in pos_trigrams else 0
 
 
-#looks up whether there are pronouns that should be considered as othering language in the whole sentence
+# looks up whether there are pronouns that should be considered as othering language in the whole sentence
 def extract_othering_language_features(features, text):
     text = get_pos_sentence(text)
     adj_prp_text = [[word,tag] for word, tag in text if tag in ['PRP', 'PRP$', 'JJ']]
 
-    #filter founded pronouns and adjectives to exclude ones that should be considered as outgroup language
+    # filter founded pronouns and adjectives to exclude ones that should be considered as outgroup language
     filtered_text = [word for word, tag in adj_prp_text if word in outgroup_pronouns or word == outgroup_adjective]
     features['outgroup_language_coef'] =  len(filtered_text) / (len(adj_prp_text) + 0.00001)
 
 
 def extract_othering_language_collocations(features, text):
     text = get_pos_sentence(text)
-    allText = ''.join([tag for word,tag in text])
-    vrb_prn_tuples = re.findall(verb_pronoun_regex, allText)
+    all_text = ''.join([tag for word,tag in text])
+    vrb_prn_tuples = re.findall(verb_pronoun_regex, all_text)
     features['othering_tuples_polarity'] = 0
     polarity = 0
     for verb, pronoun in vrb_prn_tuples:
@@ -178,7 +178,7 @@ def count_adjectives(features, text):
 
 def extract_features_of_tweet(tweet, raw=False):
     features = {}
-    if raw == False:
+    if raw is False:
         tweet = initial_text_clean_up(tweet)
     # tweet = remove_unicode_characters(tweet)
     # tweet = remove_escaped_characters(tweet)
@@ -196,6 +196,7 @@ def extract_features_of_tweet(tweet, raw=False):
     # extract_punctuation_features(features, tweet)
     extract_othering_language_collocations(features, tweet)
     extract_sentiment_features_of_tweet(features, tweet)
+    extract_topic_features(features, tweet)
     # extract_topic_features(features, tweet)
 
     return features

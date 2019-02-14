@@ -13,7 +13,7 @@ stop_words = stopwords.words('english')
 df = pd.DataFrame(pd.read_csv('../data/dev_en.tsv', sep='\t'))
 
 df = df.loc[df['HS'] == 1]
-df = df.filter(items = ['text'])
+df = df.filter(items=['text'])
 
 
 data = df.values.flatten().tolist()
@@ -24,6 +24,7 @@ data = [initial_text_clean_up(sent) for sent in data]
 def sent_to_words(sentences):
     for sentence in sentences:
         yield(gensim.utils.simple_preprocess(str(sentence), deacc=True))  # deacc=True removes punctuations
+
 
 data_words = list(sent_to_words(data))
 
@@ -57,6 +58,7 @@ def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
         texts_out.append([token.lemma_ for token in doc if token.pos_ in allowed_postags])
     return texts_out
 
+
 # Remove Stop Words
 data_words_nostops = remove_stopwords(data_words)
 
@@ -82,14 +84,14 @@ TOPICS = 5;
 
 # Build LDA model
 optimal_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
-                                           id2word=id2word,
-                                           num_topics=TOPICS,
-                                           random_state=100,
-                                           update_every=1,
-                                           chunksize=100,
-                                           passes=10,
-                                           alpha='auto',
-                                           per_word_topics=True)
+                                                id2word=id2word,
+                                                num_topics=TOPICS,
+                                                random_state=100,
+                                                update_every=1,
+                                                chunksize=100,
+                                                passes=10,
+                                                alpha='auto',
+                                                per_word_topics=True)
 
 
 def extract_topic_features(features, text, top=TOPICS):

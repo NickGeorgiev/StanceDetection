@@ -1,7 +1,5 @@
-import os
 import nltk
 import string
-from nltk.parse import stanford
 
 
 parse_keys = {'S', 'NP', 'VP'}

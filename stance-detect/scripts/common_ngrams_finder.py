@@ -1,12 +1,9 @@
 import nltk
-
-import re
-import csv
 import json
 import string
 
 from collections import Counter
-from preprocessor import remove_punctuation, remove_escaped_characters, get_hashtags
+from preprocessor import remove_punctuation
 
 words = set(nltk.corpus.words.words())
 
@@ -58,5 +55,5 @@ stopwords = set(nltk.corpus.stopwords.words('english'))
 word_count = Counter([word for word in data if word.lower() not in stopwords])
 
 with open('../jsons/unigrams.json', 'w') as file:
-     file.write(json.dumps([word for word, freq in word_count.most_common(10)]))
+    file.write(json.dumps([word for word, freq in word_count.most_common(10)]))
 

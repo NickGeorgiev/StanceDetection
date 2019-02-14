@@ -97,6 +97,7 @@ def remove_numeric_data(tweet):
     tweet = ' '.join(words).strip()
     return tweet
 
+
 def get_tweet_text_only(tweet):
     tweet = remove_hashtags(tweet)
     tweet = remove_punctuation(tweet)
