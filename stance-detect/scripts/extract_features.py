@@ -3,11 +3,8 @@ import json
 import re
 from textblob import TextBlob
 
-
 from preprocessor import *
 from utilities import *
-
-# from topic_model import extract_topic_features
 
 from word_embeddings import extract_glove_features
 from nmf_clustering import extract_topic_features
@@ -17,8 +14,8 @@ COMMON_BIGRAMS = set()
 COMMON_TRIGRAMS = set()
 COMMON_POS_BIGRAMS = set()
 COMMON_POS_TRIGRAMS = set()
-COMMON_HASHTAGS=set()
-
+COMMON_HASHTAGS = set()
+TFIDF_DATA = set()
 
 with open('../jsons/unigrams.json', 'r') as file:
     COMMON_UNIGRAMS = set(json.load(file))
@@ -26,20 +23,28 @@ with open('../jsons/bigrams.json', 'r') as file:
     COMMON_BIGRAMS = set(json.load(file))
 with open('../jsons/trigrams.json', 'r') as file:
     COMMON_TRIGRAMS = set(json.load(file))
-
 with open('../jsons/pos_bigrams.json', 'r') as file:
     COMMON_POS_BIGRAMS = set(json.load(file))
 with open('../jsons/pos_trigrams.json', 'r') as file:
     COMMON_POS_TRIGRAMS = set(json.load(file))
-
-
 with open('../jsons/common_hashtags.json','r') as file:
-    COMMON_HASHTAGS = set(json.load(file))
+    COMMON_HASHTAGS = dict(json.load(file))
+with open('../jsons/tfidf.json', 'r') as file:
+    TFIDF_DATA = dict(json.load(file))
 
 
+def extrtact_tfidf_vector_for_tweet(features, tweet):
+    tweet = get_tweet_text_only(tweet)
+    tweet_tokens = nltk.word_tokenize(tweet)
+    features['avg-tfidf'] = 0
+    for token in tweet_tokens:
+        features['token-{0}'.format(token)] = TFIDF_DATA[token] if token in TFIDF_DATA else 0
+        features['avg-tfidf'] += TFIDF_DATA[token] if token in TFIDF_DATA else 0
+    features['avg-tfidf'] /= len(tweet_tokens)
+
+ 
 def extract_sentiment_features_of_tweet(features, tweet):
     tweet = get_tweet_text_only(tweet)
-
     tokens = nltk.word_tokenize(tweet)
 
     # Extract features of full sentence.
@@ -78,15 +83,23 @@ def extract_hashtag_features(features, text):
     hashtags = get_hashtags(text)
     polarity = 0.0
     subjectivity = 0.0
-    for popular_tag in COMMON_HASHTAGS:
-        features['popular_hashtag:' + popular_tag] = 0
+
+    features['hillary_hashtags_count'] = 0
+    features['climate_hashtags_count'] = 0
+    features['abortion_hashtags_count'] = 0
+    features['feminism_hashtags_count'] = 0
+    features['atheism_hashtags_count'] = 0
 
     for tag in hashtags:
         blob = TextBlob(tag)
         polarity += blob.polarity
         subjectivity += blob.subjectivity
-        if tag in COMMON_HASHTAGS:
-            features['popular_hashtag:' + tag] = 1
+
+        features['hillary_hashtags_count'] += 1 if tag in COMMON_HASHTAGS['Hillary'] else 0
+        features['climate_hashtags_count'] += 1 if tag in COMMON_HASHTAGS['Climate'] else 0
+        features['abortion_hashtags_count'] += 1 if tag in COMMON_HASHTAGS['Abortion'] else 0
+        features['feminism_hashtags_count'] += 1 if tag in COMMON_HASHTAGS['Feminism'] else 0
+        features['atheism_hashtags_count'] += 1 if tag in COMMON_HASHTAGS['Atheism'] else 0
 
     if len(hashtags):
         polarity /= len(hashtags)
@@ -171,30 +184,24 @@ def extract_othering_language_collocations(features, text):
     features['othering_tuples_polarity'] = polarity
 
 
-def count_adjectives(features, text):
-    text = get_pos_sentence(text)
-    features['adjectives_count'] = len([word for word, tag in text if tag in ['JJ', 'JJR', 'JJS']]) / (len(text) + 0.00001)
-
-
 def extract_features_of_tweet(tweet, raw=False):
     features = {}
     if raw is False:
         tweet = initial_text_clean_up(tweet)
-    # tweet = remove_unicode_characters(tweet)
-    # tweet = remove_escaped_characters(tweet)
+    tweet = remove_unicode_characters(tweet)
+    tweet = remove_escaped_characters(tweet)
     extract_glove_features(features, tweet)
+    extrtact_tfidf_vector_for_tweet(features, tweet)
     extract_punctuation_features(features, tweet)
     extract_quoted_text_features(features, tweet)
     extract_capitalization_features(features, tweet)
     extract_quoted_text_polarity(features, tweet)
-    # extract_hashtag_features(features, tweet)
+    extract_hashtag_features(features, tweet)
     # extract_othering_language_features(features,tweet)
-    # count_adjectives(features,tweet)
-    # extract_interjections_features(features, tweet)
+    extract_interjections_features(features, tweet)
     extract_ngrams_features(features, tweet)
     extract_pos_ngrams_features(features, tweet)
-    # extract_punctuation_features(features, tweet)
-    extract_othering_language_collocations(features, tweet)
+    # extract_othering_language_collocations(features, tweet)
     extract_sentiment_features_of_tweet(features, tweet)
     extract_topic_features(features, tweet)
     # extract_topic_features(features, tweet)
