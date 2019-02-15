@@ -1,6 +1,4 @@
-import nltk
 import json
-import re
 from textblob import TextBlob
 
 from preprocessor import *
@@ -36,11 +34,13 @@ with open('../jsons/tfidf.json', 'r') as file:
 def extrtact_tfidf_vector_for_tweet(features, tweet):
     tweet = get_tweet_text_only(tweet)
     tweet_tokens = nltk.word_tokenize(tweet)
-    features['avg-tfidf'] = 0
-    for token in tweet_tokens:
-        features['token-{0}'.format(token)] = TFIDF_DATA[token] if token in TFIDF_DATA else 0
-        features['avg-tfidf'] += TFIDF_DATA[token] if token in TFIDF_DATA else 0
-    features['avg-tfidf'] /= len(tweet_tokens)
+    for key in TFIDF_DATA:
+        features['token-{0}'.format(key)] = TFIDF_DATA[key] if key in tweet_tokens else 0
+    # features['avg-tfidf'] = 0
+    # for token in tweet_tokens:
+    #     features['token-{0}'.format(token)] = TFIDF_DATA[token] if token in TFIDF_DATA else 0
+    #     features['avg-tfidf'] += TFIDF_DATA[token] if token in TFIDF_DATA else 0
+    # features['avg-tfidf'] /= len(tweet_tokens)
 
  
 def extract_sentiment_features_of_tweet(features, tweet):
@@ -197,13 +197,9 @@ def extract_features_of_tweet(tweet, raw=False):
     extract_capitalization_features(features, tweet)
     extract_quoted_text_polarity(features, tweet)
     extract_hashtag_features(features, tweet)
-    # extract_othering_language_features(features,tweet)
-    extract_interjections_features(features, tweet)
     extract_ngrams_features(features, tweet)
     extract_pos_ngrams_features(features, tweet)
-    # extract_othering_language_collocations(features, tweet)
     extract_sentiment_features_of_tweet(features, tweet)
     extract_topic_features(features, tweet)
-    # extract_topic_features(features, tweet)
 
     return features

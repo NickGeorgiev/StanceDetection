@@ -1,4 +1,3 @@
-import sklearn
 import numpy
 
 DIMENSIONS = 50

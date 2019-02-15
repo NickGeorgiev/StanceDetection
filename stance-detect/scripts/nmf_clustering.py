@@ -34,18 +34,9 @@ topics_count = 5
 nmf = NMF(n_components=5, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(tfidf)
 
 top_words_count = 20
-# display_topics(nmf, tfidf_feature_names, top_words_count)
-#calculate_similarity(nmf, tfidf_feature_names, "the retarded tantrums of #gamergate feminists show the effects of a lifetime of never facing intellectual challenge. #semst")
-# print(tfidf_vectorizer.transform(["the retarded tantrums of #gamergate feminists show the effects of a lifetime of never facing intellectual challenge. #semst"]))
-# print(nmf.transform(tfidf_vectorizer.transform(["the retarded tantrums of #gamergate feminists show the effects of a lifetime of never facing intellectual challenge. #semst"])))
-# print(nmf.transform(tfidf_vectorizer.transform(["i can think of a thousand things more important than keith olbermann. #sanctuarycities #irsscandal #benghazi #bergdahl #usdebt #semst"])))
-
 
 def extract_topic_features(features, tweet):
     i = 0
     for topic_cluster in nmf.transform(tfidf_vectorizer.transform([tweet]))[0]:
         features['topic_cluster' + str(i)] = topic_cluster
         i += 1
-
-
-extract_topic_features(dict(), "the retarded tantrums of #gamergate feminists show the effects of a lifetime of never facing intellectual challenge. #semst")
