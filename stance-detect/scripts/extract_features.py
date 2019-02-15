@@ -36,11 +36,6 @@ def extrtact_tfidf_vector_for_tweet(features, tweet):
     tweet_tokens = nltk.word_tokenize(tweet)
     for key in TFIDF_DATA:
         features['token-{0}'.format(key)] = TFIDF_DATA[key] if key in tweet_tokens else 0
-    # features['avg-tfidf'] = 0
-    # for token in tweet_tokens:
-    #     features['token-{0}'.format(token)] = TFIDF_DATA[token] if token in TFIDF_DATA else 0
-    #     features['avg-tfidf'] += TFIDF_DATA[token] if token in TFIDF_DATA else 0
-    # features['avg-tfidf'] /= len(tweet_tokens)
 
  
 def extract_sentiment_features_of_tweet(features, tweet):
@@ -62,21 +57,6 @@ def extract_capitalization_features(features, text):
     if len(capitalized_phrases):
         polarity /= len(capitalized_phrases)
     features['capitalization_polarity'] = polarity
-
-
-def extract_interjections_features(features, text):
-    interjection_words_descriptions = get_interjection_words_descriptions(text)
-    polarity = 0.0
-    subjectivity = 0.0
-    for interj in interjection_words_descriptions:
-        blob = TextBlob(interj)
-        polarity += blob.polarity
-        subjectivity += blob.subjectivity
-    if len(interjection_words_descriptions):
-        polarity /= len(interjection_words_descriptions)
-        subjectivity /= len(interjection_words_descriptions)
-    features['interjections_polarity'] = polarity
-    features['interjections_subjectivity'] = subjectivity
 
 
 def extract_hashtag_features(features, text):
@@ -158,30 +138,6 @@ def extract_pos_ngrams_features(features, text):
 
     for pos_trigram in COMMON_POS_TRIGRAMS:
         features['pos_trigram: ' + pos_trigram] = 1 if pos_trigram in pos_trigrams else 0
-
-
-# looks up whether there are pronouns that should be considered as othering language in the whole sentence
-def extract_othering_language_features(features, text):
-    text = get_pos_sentence(text)
-    adj_prp_text = [[word,tag] for word, tag in text if tag in ['PRP', 'PRP$', 'JJ']]
-
-    # filter founded pronouns and adjectives to exclude ones that should be considered as outgroup language
-    filtered_text = [word for word, tag in adj_prp_text if word in outgroup_pronouns or word == outgroup_adjective]
-    features['outgroup_language_coef'] =  len(filtered_text) / (len(adj_prp_text) + 0.00001)
-
-
-def extract_othering_language_collocations(features, text):
-    text = get_pos_sentence(text)
-    all_text = ''.join([tag for word,tag in text])
-    vrb_prn_tuples = re.findall(verb_pronoun_regex, all_text)
-    features['othering_tuples_polarity'] = 0
-    polarity = 0
-    for verb, pronoun in vrb_prn_tuples:
-        if pronoun == outgroup_adjective or pronoun in outgroup_pronouns:
-            polarity += TextBlob(verb).sentiment.polarity
-    if len(vrb_prn_tuples):
-        polarity /= len(vrb_prn_tuples)
-    features['othering_tuples_polarity'] = polarity
 
 
 def extract_features_of_tweet(tweet, raw=False):
